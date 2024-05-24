@@ -1,2 +1,2 @@
 #! /bin/bash
-docker run thi_drone_software --privileged -v /run/udev:/run/udev -v /dev/ttyAMA10:/dev/serial0  --network host
+docker run --privileged -v /run/udev:/run/udev -v /dev/serial0:/dev/serial0  -it --network host --rm thi_drone_software "$@"
