@@ -1,0 +1,4 @@
+[submodule "mission_files"]
+	path = mission_files
+	url = https://github.com/THI-Drone/mission_files.git
+	branch = dev
