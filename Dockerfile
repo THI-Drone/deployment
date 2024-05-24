@@ -78,10 +78,10 @@ RUN chmod +x /tmp/install-mavsdk.sh && /tmp/install-mavsdk.sh && rm /tmp/install
 FROM base AS build
 
 # Make sure the second stage is always redone (in order to force a clean git pull)
-ENV GIT_CLONE_TIME = $(date +%s)
+ARG GIT_CLONE_TIME=unknown
 
 # clone the workspace repo
-RUN git clone --recursive https://github.com/THI-Drone/thi-drone-ws.git --branch 19-add-mission-file-reader-subrepo
+RUN GIT_CLONE_TIME=${GIT_CLONE_TIME} git clone --recursive https://github.com/THI-Drone/thi-drone-ws.git --branch 19-add-mission-file-reader-subrepo
 WORKDIR /uav/thi-drone-ws
 
 # build shell script which sources ROS and calls colcon build

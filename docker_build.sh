@@ -1,2 +1,2 @@
 #! /bin/bash
-docker build . --tag thi_drone_software
+docker build . --build-arg GIT_CLONE_TIME=`date +%s` --tag thi_drone_software
