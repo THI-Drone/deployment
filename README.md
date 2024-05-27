@@ -19,8 +19,10 @@ sudo chmod +x docker_run.sh
 
 ## Run Container
 
+Example:
+
 ```sh
-./docker_run.sh
+./docker_run.sh UAV_ID:=UAV_FFI_4 MDF_FILE_PATH:=/uav/mission_files/HIL/mdf_zuerich.json sim:=false namespace:=uav
 ```
 
 ## Other files
