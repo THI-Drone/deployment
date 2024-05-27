@@ -55,7 +55,6 @@ RUN git clone https://github.com/raspberrypi/libcamera.git
 RUN meson setup libcamera/build libcamera/
 RUN ninja -C libcamera/build/ install
 
-
 # Install kmsxx from source
 RUN git clone https://github.com/tomba/kmsxx.git
 RUN meson setup kmsxx/build kmsxx/
@@ -81,7 +80,7 @@ FROM base AS build
 ARG GIT_CLONE_TIME=unknown
 
 # clone the workspace repo
-RUN GIT_CLONE_TIME=${GIT_CLONE_TIME} git clone --recursive https://github.com/THI-Drone/thi-drone-ws.git --branch 19-add-mission-file-reader-subrepo
+RUN GIT_CLONE_TIME=${GIT_CLONE_TIME} git clone --recursive https://github.com/THI-Drone/thi-drone-ws.git --branch pre-release
 WORKDIR /uav/thi-drone-ws
 
 # build shell script which sources ROS and calls colcon build
