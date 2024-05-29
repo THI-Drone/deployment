@@ -12,7 +12,7 @@ from picamera2.encoders import JpegEncoder
 from picamera2.outputs import FileOutput
 
 # Parse command line arguments
-parser = argparse.ArgumentParser(description="Picamera2 MJPEG streaming demo with options")
+parser = argparse.ArgumentParser(description="Picamera2 MJPEG streaming with options")
 parser.add_argument("--resolution", type=str, help="Video resolution in WIDTHxHEIGHT format (default: 640x480)", default="640x480")
 parser.add_argument("--edge_detection", action="store_true", help="Enable edge detection")
 args = parser.parse_args()
@@ -23,10 +23,10 @@ resolution = tuple(map(int, args.resolution.split('x')))
 PAGE = """\
 <html>
 <head>
-<title>picamera2 MJPEG streaming demo</title>
+<title>THI Drone Camera debug web server</title>
 </head>
 <body>
-<h1>Picamera2 MJPEG Streaming Demo</h1>
+<h1>Picamera2 MJPEG Streaming</h1>
 <img src="stream.mjpg" width="{width}" height="{height}" />
 </body>
 </html>
