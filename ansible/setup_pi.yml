@@ -1,0 +1,112 @@
+---
+- name: Setup Raspberry Pi
+  hosts: pi_group
+  become: yes
+  become_method: sudo
+  become_user: root
+
+  vars:
+    github_organisation: "thi-drone"
+    github_repo_url: "https://github.com/THI-Drone/deployment.git"
+    container_image_name: "thi_drone_software"
+    container_image_tag: "flightday-2024-05-28"   # Default option, can be overridden by command line using --extra-vars "var"
+    container_origin: "pull"                      # Default option, can be overridden by command line using --extra-vars "var"
+    local_repo_path: "/home/{{ ansible_user }}/deployment"
+    systemd_service_name: "wlan0-off-setup-symlink.service"
+    script_name: "wlan0-off-setup-symlink.sh"
+    
+  tasks:
+    - name: Install Git, Vim, and Docker
+      apt:
+        name:
+          - git
+          - vim
+          - docker.io
+        state: present
+        update_cache: yes
+
+    - name: Add the ansible user to the docker group # to make docker usable as non root
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    - name: Use enable_serial_port playbook
+      import_tasks: enable_serial_port.yml
+
+    - name: Wait for the system to come back online
+      wait_for_connection:
+        timeout: 300
+
+    - name: Copy the systemd service file to the appropriate location
+      copy:
+        content: |
+          [Unit]
+          Description=Turn off wlan0 and set up symlink for UART
+          After=network.target
+
+          [Service]
+          Type=oneshot
+          ExecStart=/usr/local/bin/wlan0-off-setup-symlink.sh
+          RemainAfterExit=true
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/{{ systemd_service_name }}
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create the script to switch off wlan0 and set up symlink
+      copy:
+        content: |
+          #!/bin/bash
+
+          # Turn off wlan0 interface
+          ip link set wlan0 down
+
+          # Set up the symlink
+          ln -sf /dev/ttyAMA0 /dev/fcc_uart
+        dest: /usr/local/bin/{{ script_name }}
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Reload systemd to recognize the new service
+      command: systemctl daemon-reload
+
+    - name: Enable and start the systemd service
+      systemd:
+        name: "{{ systemd_service_name }}"
+        enabled: yes
+        state: started
+
+    ### BUILD CONTAINER OPTION ###
+    - name: Clone the deployment repository recursively
+      git:
+        repo: "{{ github_repo_url }}"
+        dest: "{{ local_repo_path }}"
+        recursive: yes
+        update: yes
+
+    - name: Change directory to deployment and make docker_build.sh executable
+      command: chmod +x docker_build.sh
+      args:
+        chdir: "{{ local_repo_path }}"
+      when: container_origin == "build"
+
+    - name: Change directory to deployment and make docker_run.sh executable
+      command: chmod +x docker_run.sh
+      args:
+        chdir: "{{ local_repo_path }}"
+
+    - name: Trigger the container build script docker_build.sh
+      command: ./docker_build.sh
+      args:
+        chdir: "{{ local_repo_path }}"
+      when: container_origin == "build"
+
+    ### PULL CONTAINER OPTION ###
+    - name: Pull Docker container from GitHub Container Registry
+      command: docker pull ghcr.io/{{ github_organisation }}/{{ container_image_name}}:{{ container_image_tag}}
+      when: container_origin == "pull"      

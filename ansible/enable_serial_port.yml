@@ -1,0 +1,36 @@
+---
+# enable_serial_port.yml
+- name: Ensure UART is enabled in /boot/config.txt
+  lineinfile:
+    path: /boot/config.txt
+    regexp: '^enable_uart='
+    line: 'enable_uart=1'
+    state: present
+
+- name: Remove serial console from /boot/cmdline.txt
+  lineinfile:
+    path: /boot/cmdline.txt
+    regexp: 'console=serial0,115200|console=ttyAMA0,115200'
+    state: absent
+
+- name: Stop and disable serial-getty service for ttyAMA0
+  service:
+    name: serial-getty@ttyAMA0.service
+    enabled: no
+    state: stopped
+  ignore_errors: yes
+
+- name: Stop and disable serial-getty service for serial0
+  service:
+    name: serial-getty@serial0.service
+    enabled: no
+    state: stopped
+  ignore_errors: yes
+
+- name: Reboot the Raspberry Pi
+  reboot:
+    msg: "Rebooting to apply serial port changes"
+    connect_timeout: 5
+    reboot_timeout: 300
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
