@@ -9,18 +9,25 @@
     github_organisation: "thi-drone"
     github_repo_url: "https://github.com/THI-Drone/deployment.git"
     container_image_name: "thi_drone_software"
-    container_image_tag: "flightday-2024-05-28"   # Default option, can be overridden by command line using --extra-vars "var"
+    container_image_tag: "flightday-2024-06-04"   # Default option, can be overridden by command line using --extra-vars "var"
     container_origin: "pull"                      # Default option, can be overridden by command line using --extra-vars "var"
     local_repo_path: "/home/{{ ansible_user }}/deployment"
     systemd_service_name: "wlan0-off-setup-symlink.service"
     script_name: "wlan0-off-setup-symlink.sh"
     
   tasks:
-    - name: Install Git, Vim, and Docker
+    ### Basic setup stuff ###
+    - name: Ensure local_repo_path directory exists # otherwise the other tasks fail
+      file:
+        path: "{{ local_repo_path }}"
+        state: directory
+
+    - name: Install Git, Vim, htop and Docker
       apt:
         name:
           - git
           - vim
+          - htop
           - docker.io
         state: present
         update_cache: yes
@@ -31,6 +38,7 @@
         groups: docker
         append: yes
 
+    ### Enable UART ###
     - name: Use enable_serial_port playbook
       import_tasks: enable_serial_port.yml
 
@@ -81,7 +89,7 @@
         enabled: yes
         state: started
 
-    ### BUILD CONTAINER OPTION ###
+    ### Get deployment repo and make it ready for use###
     - name: Clone the deployment repository recursively
       git:
         repo: "{{ github_repo_url }}"
@@ -93,20 +101,20 @@
       command: chmod +x docker_build.sh
       args:
         chdir: "{{ local_repo_path }}"
-      when: container_origin == "build"
 
     - name: Change directory to deployment and make docker_run.sh executable
       command: chmod +x docker_run.sh
       args:
         chdir: "{{ local_repo_path }}"
 
+    ### BUILD CONTAINER FROM SRC OPTION ###
     - name: Trigger the container build script docker_build.sh
       command: ./docker_build.sh
       args:
         chdir: "{{ local_repo_path }}"
       when: container_origin == "build"
 
-    ### PULL CONTAINER OPTION ###
+    ### PULL CONTAINER FROM REGISTRY OPTION ###
     - name: Pull Docker container from GitHub Container Registry
       command: docker pull ghcr.io/{{ github_organisation }}/{{ container_image_name}}:{{ container_image_tag}}
       when: container_origin == "pull"      
