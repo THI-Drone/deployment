@@ -1,11 +1,16 @@
 ---
 # enable_serial_port.yml
-- name: Ensure UART is enabled in /boot/config.txt
-  lineinfile:
-    path: /boot/config.txt
-    regexp: '^enable_uart='
-    line: 'enable_uart=1'
-    state: present
+- name: Ensure UART is NOT disabled in /boot/firmware/config.txt
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^dtparam=uart0=off'
+    state: absent
+  
+- name: Ensure UART is enabled in /boot/firmware/config.txt
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    line: 'dtparam=uart0=on'
+    create: yes
 
 - name: Remove serial console from /boot/cmdline.txt
   lineinfile:
