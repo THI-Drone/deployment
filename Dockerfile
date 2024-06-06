@@ -66,6 +66,11 @@ ENV PYTHONPATH $PYTHONPATH/usr/local/lib/aarch64-linux-gnu/python3.10/site-packa
 # Finally install picamera2 & opencv using pip
 RUN pip3 install picamera2 opencv-python
 
+# Qreader dependencies
+RUN pip install torch --no-cache-dir
+RUN pip install qreader
+RUN apt-get install -y libzbar0
+
 # MAVLINK lib
 COPY install-mavsdk.sh /tmp/
 RUN chmod +x /tmp/install-mavsdk.sh && /tmp/install-mavsdk.sh && rm /tmp/install-mavsdk.sh
