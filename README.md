@@ -22,8 +22,12 @@ sudo chmod +x docker_run.sh
 Example:
 
 ```sh
-./docker_run.sh UAV_ID:=UAV_FFI_4 MDF_FILE_PATH:=/uav/mission_files/HIL/mdf_zuerich.json sim:=false namespace:=uav
+./docker_run.sh your_container_name:your_container_tag UAV_ID:=UAV_FFI_4 MDF_FILE_PATH:=/uav/mission_files/HIL/mdf_zuerich.json sim:=false namespace:=uav
 ```
+
+Important: Replace [container_name:the_correct_tag] with the correct tag of the Docker image you want to use:
+- `thi_drone_software:latest` for the locally built variant
+- `ghcr.io/thi-drone/thi_drone_software:flightday-2024-06-04` for the pre-built variant from the container registry
 
 ## Other files
 
