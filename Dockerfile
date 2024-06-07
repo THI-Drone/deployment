@@ -69,7 +69,7 @@ RUN pip3 install picamera2 opencv-python
 # Qreader dependencies
 RUN pip install torch --no-cache-dir
 RUN pip install qreader
-RUN apt-get install -y libzbar0
+#RUN apt-get install -y libzbar0
 
 # MAVLINK lib
 COPY install-mavsdk.sh /tmp/
