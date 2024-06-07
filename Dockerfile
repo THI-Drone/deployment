@@ -24,6 +24,9 @@ RUN apt-get install -y libgl1-mesa-glx
 RUN apt-get install -y clang-format
 RUN apt-get install -y python3-autopep8
 
+#libzbar
+RUN apt-get install -y libzbar0
+
 # Make sure ROS is sourced in every bash shell in the container
 RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /root/.bashrc
 # Set the default shell to bash (rather than sh)
@@ -69,7 +72,7 @@ RUN pip3 install picamera2 opencv-python
 # Qreader dependencies
 RUN pip install torch --no-cache-dir
 RUN pip install qreader
-#RUN apt-get install -y libzbar0
+
 
 # MAVLINK lib
 COPY install-mavsdk.sh /tmp/
