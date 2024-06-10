@@ -70,7 +70,6 @@ ENV PYTHONPATH $PYTHONPATH/usr/local/lib/aarch64-linux-gnu/python3.10/site-packa
 RUN pip3 install picamera2 opencv-python
 
 # Qreader dependencies
-RUN pip install torch --no-cache-dir
 RUN pip install qreader
 
 
@@ -88,7 +87,7 @@ FROM base AS build
 ARG GIT_CLONE_TIME=unknown
 
 # clone the workspace repo
-RUN GIT_CLONE_TIME=${GIT_CLONE_TIME} git clone --recursive https://github.com/THI-Drone/thi-drone-ws.git --branch feat-new-commits
+RUN GIT_CLONE_TIME=${GIT_CLONE_TIME} git clone --recursive https://github.com/THI-Drone/thi-drone-ws.git --branch pre-release
 WORKDIR /uav/thi-drone-ws
 
 # build shell script which sources ROS and calls colcon build
