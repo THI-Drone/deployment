@@ -71,6 +71,8 @@ RUN pip3 install picamera2 opencv-python
 
 # Qreader dependencies
 RUN pip install qreader
+COPY download_qreader_model.py .
+RUN python3 download_qreader_model.py
 
 
 # MAVLINK lib
