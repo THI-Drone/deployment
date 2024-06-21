@@ -22,7 +22,7 @@ numImg = 1
 try:
     while True:
         img_array = picam2.capture_array("main")
-        img_path = f'{image_path}/{numImg}_successfully_detected.jpg'
+        img_path = f'{image_path}/captured_image_{numImg}.jpg'
         cv2.imwrite(img_path, img_array)
         numImg += 1
         time.sleep(1) 
