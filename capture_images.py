@@ -1,5 +1,4 @@
 from picamera2 import Picamera2
-import cv2
 import time
 import datetime
 import os
@@ -21,9 +20,10 @@ numImg = 1
 
 try:
     while True:
-        img_array = picam2.capture_array("main")
-        img_path = f'{image_path}/captured_image_{numImg}.jpg'
-        cv2.imwrite(img_path, img_array)
+        #img_array = picam2.capture_array("main")
+        file_path = f'{image_path}/captured_image_{numImg}.jpg'
+        picam2.capture_file(file_path)
+        #cv2.imwrite(img_path, img_array)
         numImg += 1
         time.sleep(1) 
 except KeyboardInterrupt:
